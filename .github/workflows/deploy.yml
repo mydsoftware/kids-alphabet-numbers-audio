@@ -1,0 +1,44 @@
+name: انتشار سایت روی GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: دریافت کد
+        uses: actions/checkout@v4
+      - name: تنظیم GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: آماده‌سازی فایل‌های سایت
+        run: |
+          test -f index.html
+          mkdir -p _site
+          cp index.html _site/
+      - name: بارگذاری فایل‌های سایت
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: انتشار در GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
