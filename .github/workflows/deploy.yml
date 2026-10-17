@@ -26,7 +26,8 @@ jobs:
         run: |
           test -f index.html
           mkdir -p _site
-          cp index.html _site/
+          cp -R . _site/
+          rm -rf _site/.git _site/.github _site/_site
       - name: بارگذاری فایل‌های سایت
         uses: actions/upload-pages-artifact@v3
         with:
